@@ -1,10 +1,13 @@
 import random
 import math
+import csv
 #----import numpy - Does not work on IDLE
 
 #To do's:
 # 1. Evaluate
 # 2. Update
+
+USING_INPUT_DATA = True
 
 def MWEM(B, Q, T, eps, smart):
     #Initialize real histogram
@@ -15,7 +18,7 @@ def MWEM(B, Q, T, eps, smart):
     print(histogram)
     for val in range(len(B[0])):
         histogram[B[0][val]][B[1][val]] += 1
-    
+
     #Initialize synthetic histogram
     nAtt = 2 #Number of attributes (1 for 1D, 2 for 2D)
     A = 0
@@ -41,7 +44,7 @@ def MWEM(B, Q, T, eps, smart):
         for i in range(len(histogram)):
             for j in range(len(histogram[i])):
                 A[i][j] += value
-        
+
     print("Real: " + str(histogram))
     #print(sum(histogram))
     formattedA = [['%.3f' % elem for elem in A[i]] for i in range(len(A))]
@@ -65,7 +68,7 @@ def MWEM(B, Q, T, eps, smart):
             print(qi)
             qi = ExponentialMechanism(histogram, A, Q, eps / (2*T))
             print(qi)
-            
+
         #Measure the query, and add it to our collection of measurements
         print()
         print("INTO Laplace stuff")
@@ -77,7 +80,7 @@ def MWEM(B, Q, T, eps, smart):
         print("Laplace: " + str(lap))
         print("Sum: " + str(evaluate + lap))
         print("Measurements: " + str(measurements))
-        
+
         #improve your approximation using poorly fit measurements
         MultiplicativeWeights(A, Q, measurements, histogram)
         print(A)
@@ -92,7 +95,7 @@ def ExponentialMechanism(B, A, Q, eps):
     errors = [0]*len(Q)
     for i in range(len(errors)):
         errors[i] = eps * abs(Evaluate(Q[i], B) - Evaluate(Q[i], A))/2.0
-    
+
     maximum = max(errors)
     print("errors: " + str(errors))
     print("max error: " + str(maximum))
@@ -101,7 +104,7 @@ def ExponentialMechanism(B, A, Q, eps):
     print()
     print("Errors after subtraction:")
     print(errors)
-    
+
     uniform = sum(errors) * random.random()
     print("uniform: " + str(uniform))
     for i in range(len(errors)):
@@ -130,7 +133,7 @@ def MultiplicativeWeights(A, Q, measurements, histogram):
 
             error = measurements[qi] - Evaluate(Q[qi], A)
             print("Error: " + str(error))
-            
+
             #Update MW!
             for i in range(len(A)):
                 #not sure about the following step!! ??????
@@ -138,7 +141,7 @@ def MultiplicativeWeights(A, Q, measurements, histogram):
                 #print("A updates..")
                 #print(A[i] * math.exp(histogram[i] * error/(2.0*total)))
 
-                
+
             print("Updated A: " + str(A))
 
             #Re-normalize!
@@ -178,7 +181,7 @@ def maxError(real, synthetic, Q):
         diff = math.abs(Evaluate(Q[i], real) - Evaluate(Q[i], synthetic))
         if diff > maxVal:
             maxVal = diff
-    return maxVal  
+    return maxVal
 
 
 def meanSqErr(real, synthetic, Q):
@@ -188,25 +191,47 @@ def meanSqErr(real, synthetic, Q):
 def main():
 
     #2D Dataset. To do:put code to read data from file!
-    B = [[random.randint(0,5) for i in range(6)], [random.randint(0,5) for i in range(6)]] #Dataset
+    #1D Dataset
+    B = []
+    B.append([])
+    B.append([])
+    if USING_INPUT_DATA == True: #import from file
+        with open('Datasets/test_2d.csv', 'rt') as csvfile:
+            reader = csv.reader(csvfile)
+            for row in reader:
+                    try:
+                        B[0].append(int(row[0]))
+                        B[1].append(int(row[1]))
+                    except ValueError as e:
+                        continue
+                    except IndexError as e:
+                        continue
+    else:     #test
+        B = [[random.randint(0,5) for i in range(6)], [random.randint(0,5) for i in range(6)]] #Dataset
+    print("B: " + str(B))
 
-    #bound on the max value possible for the queries, to avoid index out of bound!!
-    maxVal1 = max(B[0])
-    maxVal2 = max(B[1])
-    
-    #Queries: count queries for 2D
-    Q = [{(random.randint(0,maxVal1),random.randint(0,maxVal1)): (random.randint(0,maxVal2),random.randint(0,maxVal2))} for i in range(7)]
-    
-    T = 8 #Iterations - HAS to be LESS than the number of queries! 
-    eps = 2.0 #Epsilon
-    scaleParam = 0 #0 as of now, will see what to do with it - Look at Julia implem.!!
-    smart = False #Also look at Julia implem. to see how they use it!!
-    
-    SintheticData, RealHisto = MWEM(B, Q, T, eps, smart)
+    TEST = True
 
-    formattedList = ['%.3f' % elem for elem in SintheticData]
-    print()
-    print("Sinthetic Data: " + str(fomattedList))
-    print("Real data histogram: " + str(RealHisto))
-    
+    if TEST:
+        print("Done")
+    else:
+        #bound on the max value possible for the queries, to avoid index out of bound!!
+        maxVal1 = max(B[0])
+        maxVal2 = max(B[1])
+
+        #Queries: count queries for 2D
+        Q = [{(random.randint(0,maxVal1),random.randint(0,maxVal1)): (random.randint(0,maxVal2),random.randint(0,maxVal2))} for i in range(7)]
+
+        T = 8 #Iterations - HAS to be LESS than the number of queries!
+        eps = 2.0 #Epsilon
+        scaleParam = 0 #0 as of now, will see what to do with it - Look at Julia implem.!!
+        smart = False #Also look at Julia implem. to see how they use it!!
+
+        SintheticData, RealHisto = MWEM(B, Q, T, eps, smart)
+
+        formattedList = ['%.3f' % elem for elem in SintheticData]
+        print()
+        print("Sinthetic Data: " + str(fomattedList))
+        print("Real data histogram: " + str(RealHisto))
+
 main()

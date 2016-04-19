@@ -1,5 +1,7 @@
 import random
 import math
+import csv
+import matplotlib.pyplot as plt
 #----import numpy - Does not work on IDLE
 
 #To do's:
@@ -10,13 +12,15 @@ import math
 # 5. Implement for 2D
 # 6. Graph
 
+USING_INPUT_DATA=True
+
 def MWEM(B, Q, T, eps, smart):
     #Initialize real histogram
     length = max(B)
     histogram = [0]*(length + 1)
     for val in range(len(B)):
         histogram[B[val]] += 1
-    
+
     #Initialize synthetic histogram
     nAtt = 1 #Number of attributes (1 for 1D, 2 for 2D)
     A = 0
@@ -61,7 +65,7 @@ def MWEM(B, Q, T, eps, smart):
             print(qi)
             qi = ExponentialMechanism(histogram, A, Q, eps / (2*T))
             print(qi)
-            
+
         #Measure the query, and add it to our collection of measurements
         print()
         print("INTO Laplace stuff")
@@ -73,7 +77,7 @@ def MWEM(B, Q, T, eps, smart):
         #print("Laplace: " + str(lap))
         #print("Sum: " + str(evaluate + lap))
         #print("Measurements: " + str(measurements))
-        
+
         #improve your approximation using poorly fit measurements
         MultiplicativeWeights(A, Q, measurements, histogram)
         #print(A)
@@ -88,7 +92,7 @@ def ExponentialMechanism(B, A, Q, eps):
     errors = [0]*len(Q)
     for i in range(len(errors)):
         errors[i] = eps * abs(Evaluate(Q[i], B) - Evaluate(Q[i], A))/2.0
-    
+
     maximum = max(errors)
     #print("errors: " + str(errors))
     #print("max error: " + str(maximum))
@@ -97,7 +101,7 @@ def ExponentialMechanism(B, A, Q, eps):
     print()
     #print("Errors after subtraction:")
     #print(errors)
-    
+
     uniform = sum(errors) * random.random()
     #print("uniform: " + str(uniform))
     for i in range(len(errors)):
@@ -126,7 +130,7 @@ def MultiplicativeWeights(A, Q, measurements, histogram):
 
             error = measurements[qi] - Evaluate(Q[qi], A) #SOMETIMES NEGATIVE, try to understand its effect!!
             print("Error: " + str(error))
-            
+
             #Update MW!
             for i in range(len(A)):
                 #not sure about the following step!! ??????
@@ -134,7 +138,7 @@ def MultiplicativeWeights(A, Q, measurements, histogram):
                 #print("A updates..")
                 #print(A[i] * math.exp(histogram[i] * error/(2.0*total)))
 
-                
+
             #print("Updated A: " + str(A))
 
             #Re-normalize!
@@ -171,7 +175,7 @@ def maxError(real, synthetic, Q):
         diff = abs(Evaluate(Q[i], real) - Evaluate(Q[i], synthetic))
         if diff > maxVal:
             maxVal = diff
-    return maxVal  
+    return maxVal
 
 
 def meanSqErr(real, synthetic, Q):
@@ -180,18 +184,32 @@ def meanSqErr(real, synthetic, Q):
 
 def main():
 
-    #1D Dataset. To do:put code to read data from file!
-    B = [random.randint(1,15) for i in range(30)] #Dataset
+
+    B = []  #1D Dataset
+
+    if USING_INPUT_DATA == True: #import from file
+        with open('Datasets/test1.csv', 'rt') as csvfile:
+            reader = csv.reader(csvfile)
+            for row in reader:
+                    try:
+                        B.append(int(row[0]))
+                    except ValueError as e:
+                        continue
+                    except IndexError as e:
+                        continue
+    else:     #test         
+        B = [random.randint(1,15) for i in range(30)] #Dataset
+
     maxVal = max(B)
-    
+
     #Queries: count queries
     Q = [{random.randint(1,maxVal):random.randint(1,maxVal)} for i in range(12)] #Queries
-    
-    T = 8 #Iterations - HAS to be LESS than the number of queries! 
+
+    T = 8 #Iterations - HAS to be LESS than the number of queries!
     eps = 3.0 #Epsilon
     scaleParam = 0 #0 as of now, will see what to do with it - Look at Julia implem.!!
     smart = False #Also look at Julia implem. to see how they use it!!
-    
+
     SintheticData, RealHisto = MWEM(B, Q, T, eps, smart)
 
     formattedList = ['%.3f' % elem for elem in SintheticData]
@@ -199,5 +217,5 @@ def main():
     print("Sinthetic Data: " + str(formattedList))
     print("Real data histogram: " + str(RealHisto))
     print("Error: " + str(maxError(RealHisto,SintheticData, Q)))
-    
+
 main()
