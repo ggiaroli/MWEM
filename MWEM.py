@@ -197,7 +197,7 @@ def main():
                         continue
                     except IndexError as e:
                         continue
-    else:     #test         
+    else:     #test
         B = [random.randint(1,15) for i in range(30)] #Dataset
 
     maxVal = max(B)
@@ -217,5 +217,16 @@ def main():
     print("Sinthetic Data: " + str(formattedList))
     print("Real data histogram: " + str(RealHisto))
     print("Error: " + str(maxError(RealHisto,SintheticData, Q)))
+
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    numBins = 5
+    ax.hist(RealHisto,numBins,color=['green'],alpha=0.8)
+
+    bx = fig.add_subplot(111)
+    bx.hist(SintheticData, numBins,color=['red'],alpha=0.8)
+
+    plt.show()
+
 
 main()
