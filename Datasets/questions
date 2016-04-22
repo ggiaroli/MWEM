@@ -1,3 +1,19 @@
 questions:
 - Using 2 attributes from the
 - Using basic regression, we can graph two attributes from health-related datasets,
+
+First question:
+Policy-makers are considering allocating funds for increased mental health services in public schools. The policy makers are looking to provide for a specific age range that would provide the most benefit to their students. As a result, they have narrowed down their decision to allocating funds to either elementary schools or high schools.
+
+  Attributes:
+    - Ages 4 through 17
+    - The extent to which CAM Therapy helped the individual
+
+
+
+Second Question:
+//Insert question here
+
+  Attributes:
+    - Age at which diabetes was diagnosed
+    - Educational attainment
