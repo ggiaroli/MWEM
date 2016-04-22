@@ -217,14 +217,15 @@ def main():
     print("Sinthetic Data: " + str(formattedList))
     print("Real data histogram: " + str(RealHisto))
     print("Error: " + str(maxError(RealHisto,SintheticData, Q)))
+    print(len(RealHisto))
 
     fig = plt.figure()
     ax = fig.add_subplot(111)
-    numBins = 5
+    numBins = max(RealHisto) + 1
     ax.hist(RealHisto,numBins,color=['green'],alpha=0.8)
 
     bx = fig.add_subplot(111)
-    bx.hist(SintheticData, numBins,color=['red'],alpha=0.8)
+    #bx.hist(SintheticData, numBins,color=['red'],alpha=0.8)
 
     plt.show()
 
