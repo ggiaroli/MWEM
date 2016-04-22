@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 # 1. Scale parameter (Look at Julia) - Do we need?
 # 2. smart parameter (Look at Julia) - Done!!
 # 3. Error function (from Julia) - Done!!
-# 4. Read intial dataset from a file
+# 4. Read intial dataset from a file - Done!
 # 5. Implement for 2D
 # 6. Graph
 
@@ -37,10 +37,10 @@ def MWEM(B, Q, T, eps, smart):
         weights = [(0.5*weights[val]+(0.5*sum(histogram)/len(histogram))) for val in range(len(weights))]
         A = weights
         eps = (.5)*eps
-        print()
+        #print()
         formattedA0 = ['%.3f' % elem for elem in A0]
-        print("Synthetic: " +str(formattedA0))
-        print(sum(A0))
+        #print("Synthetic: " +str(formattedA0))
+        #print(sum(A0))
     else:
         #Else we simply create a Uniform Distribution
         n = sum(histogram)
@@ -61,14 +61,14 @@ def MWEM(B, Q, T, eps, smart):
         qi = ExponentialMechanism(histogram, A, Q, (eps /(2*T)))
 
         while(qi in measurements):
-            print("Into the while ------ ")
-            print(qi)
+            #print("Into the while ------ ")
+            #print(qi)
             qi = ExponentialMechanism(histogram, A, Q, eps / (2*T))
-            print(qi)
+            #print(qi)
 
         #Measure the query, and add it to our collection of measurements
-        print()
-        print("INTO Laplace stuff")
+        #print()
+        #print("INTO Laplace stuff")
         evaluate = Evaluate(Q[qi],histogram)
         lap = Laplace((2*T)/(eps*nAtt))
         measurements[qi] = evaluate + lap
@@ -86,7 +86,7 @@ def MWEM(B, Q, T, eps, smart):
 def ExponentialMechanism(B, A, Q, eps):
     #Here we are sampling a query through the exponential mechanism
     #I don't really understand what is happening here!!
-    print()
+    #print()
     print("INTO Exponential Mechanism")
     print("len(Q): " + str(len(Q)))
     errors = [0]*len(Q)
@@ -94,16 +94,16 @@ def ExponentialMechanism(B, A, Q, eps):
         errors[i] = eps * abs(Evaluate(Q[i], B) - Evaluate(Q[i], A))/2.0
 
     maximum = max(errors)
-    #print("errors: " + str(errors))
-    #print("max error: " + str(maximum))
+    print("errors: " + str(errors))
+    print("max error: " + str(maximum))
     for i in range(len(errors)):
         errors[i] = math.exp(errors[i] - maximum)
     print()
-    #print("Errors after subtraction:")
-    #print(errors)
+    print("Errors after subtraction:")
+    print(errors)
 
     uniform = sum(errors) * random.random()
-    #print("uniform: " + str(uniform))
+    print("uniform: " + str(uniform))
     for i in range(len(errors)):
         uniform -= errors[i]
         print(str(uniform + errors[i]) + " - " + str(errors[i]) + " = " + str(uniform))
@@ -122,14 +122,14 @@ def Laplace(sigma):
 
 def MultiplicativeWeights(A, Q, measurements, histogram):
     total = sum(A)
-    print()
-    print("INTO MultiplicativeWeights")
-    print("Total: " + str(total))
+    #print()
+    #print("INTO MultiplicativeWeights")
+    #print("Total: " + str(total))
     for iteration in range(5): #repetitions == 5
         for qi in measurements:
 
             error = measurements[qi] - Evaluate(Q[qi], A) #SOMETIMES NEGATIVE, try to understand its effect!!
-            print("Error: " + str(error))
+            #print("Error: " + str(error))
 
             #Update MW!
             for i in range(len(A)):
@@ -143,7 +143,7 @@ def MultiplicativeWeights(A, Q, measurements, histogram):
 
             #Re-normalize!
             count = sum(A)
-            print("Count: " + str(count))
+            #print("Count: " + str(count))
             for k in range(len(A)):
                 A[k] *= total/count
             #print("Normalized A: " + str(A))
@@ -177,7 +177,6 @@ def maxError(real, synthetic, Q):
             maxVal = diff
     return maxVal
 
-
 def meanSqErr(real, synthetic, Q):
     errors = [(Evaluate(Q[i], synthetic) - Evaluate(Q[i], real)) for i in range(len(Q))]
     #-------return (numpy.linalg.norm((errors))**2)/len(errors)
@@ -201,7 +200,7 @@ def main():
         B = [random.randint(1,15) for i in range(30)] #Dataset
 
     maxVal = max(B)
-
+    print(str(B))
     #Queries: count queries
     Q = [{random.randint(1,maxVal):random.randint(1,maxVal)} for i in range(12)] #Queries
 
