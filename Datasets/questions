@@ -5,6 +5,21 @@ questions:
 First question:
 Policy-makers are considering allocating funds for increased mental health services in public schools. The policy makers are looking to provide for a specific age range that would provide the most benefit to their students. As a result, they have narrowed down their decision to allocating funds to either elementary schools or high schools.
 
+
+Notes from Kobbi:
+push on question as much as we can. use maxerror/meansqerror. how do these measures relate to use case? how do they help people make decisions. should we have other measures? certain measurements are more pertinent for various use cases. how do these measures relate to the chances of making, say, a wrong decisoin? are there better decisions? I want you to taste this. Mmm. He would love more. How do we know what we're getting is accurate? (Fix 2d bug).
+
+Suppose we take epsilon to infinity. Am I getting the same behavior? Expected behavior in terms of magnitudes of error (smaller epsilon, more error)
+
+Queries depend on use case. People consider synthetic data, they wish to generate synthetic data that answers all possible queries. You need to choose which queries you will answer. A good set of queries...since we're looking at a 2D case...conjunction queries.
+Choose what's interesting for us.
+
+1D: more interesting when domain size is large.
+Use 1D as a stepping-stone.
+Distance between true answer and approximate answer on intervals.
+i.e. what's the max difference? Focuses on certain class of queries (intervals of queries) measures max difference.
+How much of my distribution falls within range of ages, for example.
+
   Attributes:
     - Ages 4 through 17
     - The extent to which CAM Therapy helped the individual
@@ -17,3 +32,14 @@ Second Question:
   Attributes:
     - Age at which diabetes was diagnosed
     - Educational attainment
+
+
+Poster:
+Small blurb regarding MWEM algorithm background/abstract
+Perhaps one side of the poster will showcase 1D, along with info regarding it, with the other being 2D
+Piece(s) of code to show implementation (1D vs. 2D, perhaps?)
+Graphed results (1D/2D)
+1D: How parameters affect accuracy
+2D: The question, and discussion of parameters. What parameters/metrics influence the decision, and what decision are we making? 
+
+Because synthetic data varies per execution, we should run the code multiple times (20-50?), coming up with a threshold of how far the synthetic data varies from the real data, as well as average synthetic data. 
