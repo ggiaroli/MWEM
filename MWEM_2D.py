@@ -275,7 +275,7 @@ def main():
     #For test purposes, we will need to run MWEM more than once and 
     #take an average of the performance metrics, in order to be more reliable
     metrics = [] # to store each running's result
-    numRunnings = 3
+    numRunnings = 1
     for i in range(numRunnings):
         print("------------ MWEM Test Run #" + str(i) + " ------------------")
         print()
