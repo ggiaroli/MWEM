@@ -44,12 +44,12 @@ def MWEM(B, Q, T, eps, smart, repetitions):
         #Else we simply create a Uniform Distribution
         n = sum(histogram)
         A = [n/len(histogram) for i in range(len(histogram))]
-        print('Done')
+        #print('Done')
 
-    print("Real: " + str(histogram))
+    #print("Real: " + str(histogram))
     #print(sum(histogram))
-    formattedA = ['%.3f' % elem for elem in A]
-    print("Synthetic: " +str(formattedA))
+    #formattedA = ['%.3f' % elem for elem in A]
+    #print("Synthetic: " +str(formattedA))
     #print(sum(A))
     #return
     measurements = {}
@@ -61,18 +61,18 @@ def MWEM(B, Q, T, eps, smart, repetitions):
         qi = ExponentialMechanism(histogram, A, Q, (eps /(2*T)))
 
         while(qi in measurements):
-            print("INTO THE WHILE ------ ")
+            #print("INTO THE WHILE ------ ")
             #print(qi)
             qi = ExponentialMechanism(histogram, A, Q, eps / (2*T))
-            print("Qi from while loop: " + str(qi))
+           # print("Qi from while loop: " + str(qi))
 
         #Measure the query, and add it to our collection of measurements
-        print()
-        print("**********INTO LAPLACE STUFF************")
+        #print()
+        #print("**********INTO LAPLACE STUFF************")
         evaluate = Evaluate(Q[qi],histogram)
         lap = Laplace((2*T)/(eps*nAtt))
         measurements[qi] = evaluate + lap
-        print("Updated measurements: " + str(measurements))
+        #print("Updated measurements: " + str(measurements))
 
         #improve your approximation using poorly fit measurements
         MultiplicativeWeights(A, Q, measurements, histogram, repetitions)
@@ -81,34 +81,32 @@ def MWEM(B, Q, T, eps, smart, repetitions):
 
 def ExponentialMechanism(B, A, Q, eps):
     #Here we are sampling a query through the exponential mechanism
-    #I don't really understand what is happening here!!
-    print()
-    print("*******INTO EXPONENTIAL MECHANISM**********")
-    #print("len(Q): " + str(len(Q)))
+
+    #print()
+    #print("*******INTO EXPONENTIAL MECHANISM**********")
     errors = [0]*len(Q)
     for i in range(len(errors)):
         errors[i] = eps * abs(Evaluate(Q[i], B) - Evaluate(Q[i], A))/2.0
 
     maximum = max(errors)
-    print("errors: " + str(errors))
-    print("max error: " + str(maximum))
+    #print("errors: " + str(errors))
+    #print("max error: " + str(maximum))
     for i in range(len(errors)):
         errors[i] = math.exp(errors[i] - maximum)
     #print()
-    print("Errors after subtraction: " + str(errors))
+    #print("Errors after subtraction: " + str(errors))
     #print(errors)
     
     rNum = random.random()
     uniform = sum(errors) * rNum
-    print("Random Number: " + str(rNum))
-    print("Uniform: " + str(uniform))
+    #print("Random Number: " + str(rNum))
+    #print("Uniform: " + str(uniform))
     for i in range(len(errors)):
         uniform -= errors[i]
-        #print(str(uniform + errors[i]) + " - " + str(errors[i]) + " = " + str(uniform))
         if uniform <= 0.0:
-            print("Returned i!!!")
+    #        print("Returned i!!!")
             return i
-    print("Returned len(errors)-1!!!")
+    #print("Returned len(errors)-1!!!")
     return len(errors) - 1
 
 
@@ -122,50 +120,35 @@ def Laplace(sigma):
 def MultiplicativeWeights(A, Q, measurements, histogram, repetitions):
     total = sum(A)
     #print()
-    print("*****INTO MW****")
-    #print("Total: " + str(total))
+    #print("*****INTO MW****")
     for iteration in range(repetitions):
         for qi in measurements:
 
             error = measurements[qi] - Evaluate(Q[qi], A) #SOMETIMES NEGATIVE, try to understand its effect!!
-            print("Get the Error: " + str(error))
-            print()
-            print("Original A: " + str(A))
-            print()
+            #print("Get the Error: " + str(error))
+            #print()
+            #print("Original A: " + str(A))
+            #print()
+
             #Update MW!
-            print("A updates..")
-            print(str(A[1]) + " becomes --> " + str(A[1] * math.exp(histogram[1] * error/(2.0*total))))
             query = queryToBinary(Q[qi], len(A))
-            print(query)
-            for i in range(len(A)):     
-                #"lenght" of the query
-                #key = list(Q[i])[0]
-                #length = abs(key - Q[i][key])
-                #A[i] = A[i] * math.exp(length * error/(2.0*total))
-            
-                A[i] = A[i] * math.exp(query[i] * error/(2.0*total))
-                
-                #!!!!!!!!!
-                #histogram[i] doesn't make any fucking sense
-                #Plus it is supposed to be a value normalized between 0-1
-                #!!!!!!!!!!
-                
+            for i in range(len(A)):                 
+                A[i] = A[i] * math.exp(query[i] * error/(2.0*total))      
                 #print("A updates..")
                 #print(A[i] * math.exp(histogram[i] * error/(2.0*total)))
             
 
-            print("Updated A: " + str(A))
-            print()
+            #print("Updated A: " + str(A))
+            #print()
 
             #Re-normalize!
             count = sum(A)
-            #print("Count: " + str(count))
             for k in range(len(A)):
                 A[k] *= total/count
-            print("Normalized A: " + str(A))
-            print()
-            print("********** END OF MW **************")
-            print()
+            #print("Normalized A: " + str(A))
+            #print()
+            #print("********** END OF MW **************")
+            #print()
 
 
 
@@ -195,7 +178,21 @@ def maxError(real, synthetic, Q):
 def meanSqErr(real, synthetic, Q):
     errors = [(Evaluate(Q[i], synthetic) - Evaluate(Q[i], real)) for i in range(len(Q))]
     return (numpy.linalg.norm((errors))**2)/len(errors)
-    
+
+def minError(real, synthetic, Q):
+    minVal = 100000000000
+    diff = 0
+    for i in range(len(Q)):
+        diff = abs(Evaluate(Q[i], real) - Evaluate(Q[i], synthetic))
+        if diff < minVal:
+            minVal = diff
+    return minVal
+
+def meanError(real, synthetic, Q):
+    errors = [abs(Evaluate(Q[i], synthetic) - Evaluate(Q[i], real)) for i in range(len(Q))]
+    return sum(errors)/len(errors)
+
+
 def transformForPlotting(Histo, B):
     start = min(B)
     end = max(B)
@@ -243,20 +240,12 @@ def main():
     maxVal = max(B)
     minVal = min(B)
     
-    #Globals for debugging!!!
-    #B = globals()['B']
-    #print(globals()['B'])
-    
     #Queries: count queries
-    Q = [{random.randint(0,maxVal - minVal):random.randint(0,maxVal - minVal)} for i in range(40)] #Queries
-    
-    #Alternative Queries
-    #--Q = [{minVal:maxVal} for i in range(20)]
-    Q = [{i:i} for i in range(10)]
+    Q = [{random.randint(0,maxVal - minVal):random.randint(0,maxVal - minVal)} for i in range(60)] #Queries
 
     
-    T = 10 #Iterations - HAS to be LESS than the number of queries!
-    eps = 100.0 #Epsilon
+    T = 30 #Iterations - HAS to be LESS than the number of queries!
+    eps = 300.0 #Epsilon
     scaleParam = 0 #0 as of now, will see what to do with it - Look at Julia implem.!!
     smart = False #Also look at Julia implem. to see how they use it!!
     repetitions = 20
@@ -265,12 +254,18 @@ def main():
 
     formattedList = ['%.3f' % elem for elem in SintheticData]
     print()
-    print("Sinthetic Data: " + str(formattedList))
     print("Real data histogram: " + str(RealHisto))
-    print("MaxError: " + str(maxError(RealHisto,SintheticData, Q)))
-    print("MeanSquaredError: " + str(meanSqErr(RealHisto, SintheticData, Q)))
+    print()
+    print("Sinthetic Data: " + str(formattedList))
+    print()
     print("Q: " + str(Q))
-
+    print()
+    print("Metrics:")
+    print("    - MaxError: " + str(maxError(RealHisto,SintheticData, Q)))
+    print("    - MinError: " + str(minError(RealHisto,SintheticData, Q)))
+    print("    - MeanSquaredError: " + str(meanSqErr(RealHisto, SintheticData, Q)))
+    print("    - MeanError: " + str(meanError(RealHisto,SintheticData, Q)))
+    
     #Histogram Plot
     histogram = plt.figure()
     newHist = transformForPlotting(RealHisto, B)
